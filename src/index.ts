@@ -28,7 +28,7 @@ const isAllowedTP = (message: string) => {
             if (onNetwork) return;
             onNetwork = true;
 
-            console.log("Bot logged in!");
+            console.log(`${bot.username} logged in!`);
 
             const embed = new EmbedBuilder()
                 .setAuthor({
@@ -62,7 +62,7 @@ const isAllowedTP = (message: string) => {
         });
 
         bot.on("messagestr", (chatMessage) => {
-            console.log(chatMessage);
+            console.log(`[${bot.username}] ${chatMessage}`);
 
             if (chatMessage.includes("has requested that you teleport to them") && isAllowedTP(chatMessage)) {
                 bot.chat("/tpaccept");
