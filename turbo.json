@@ -6,8 +6,21 @@
             "dependsOn": ["^build"],
             "outputs": ["dist/**"]
         },
-        "dev": {
+        "db:generate": {
+            "inputs": ["prisma/schema.prisma"],
             "cache": false
+        },
+        "db:push": {
+            "inputs": ["prisma/schema.prisma"],
+            "cache": false
+        },
+        "clean": {
+            "cache": false
+        },
+        "dev": {
+            "dependsOn": ["^db:generate"],
+            "cache": false,
+            "persistent": true
         }
     }
 }
