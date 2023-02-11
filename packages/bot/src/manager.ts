@@ -3,6 +3,12 @@ import { createBot as _createBot } from "./bot";
 import { Account, Server } from "@alts/db";
 import type { BotOptions } from "mineflayer";
 import { wait } from "./utils";
+import { EmbedBuilder, WebhookClient } from "discord.js";
+
+const webhookClient = new WebhookClient({
+    id: config.discord.webhook.id,
+    token: config.discord.webhook.token,
+});
 
 export const bots = new Map<string, RunningAlt>();
 
@@ -43,6 +49,11 @@ export const createBot = (server: Server, account: Account) => {
         }
     });
 
+    bot.on("login", () => {
+        console.log("Bot logged in");
+    });
+
     bots.set(account.id, bot);
+
     console.log("Created bot");
 };
