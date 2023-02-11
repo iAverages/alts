@@ -1,14 +1,16 @@
-import type { Bot } from "mineflayer";
+import { RunningAlt } from "../type";
 import { wait } from "../utils";
-import { state } from "../state";
 
-const onLogin = async (bot: Bot) => {
-    if (state.network.survial) return;
-    state.network.survial = true;
-    console.log(`${bot.username} logged in!`);
+const onLogin = async (bot: RunningAlt) => {
+    if (bot._data.networkServer === "survival") return;
+    bot.log(`connected to ${bot._data.host} (${bot._data.serverId})!`);
     await wait(1000);
-    // bot.chat("/server survival");
-    console.log("Survival");
+    bot.chat("/server survival");
+    bot._data.networkServer = "survival";
+    bot.log("Moved to survival");
+
+    // Make bot join survival every 5 minutes
+    setInterval(() => bot.chat("/server survival"), 1000 * 60 * 5);
 };
 
 export default onLogin;

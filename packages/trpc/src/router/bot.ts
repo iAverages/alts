@@ -1,10 +1,7 @@
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { createBot } from "@alts/bot";
 import { z } from "zod";
-import type { Bot, BotOptions } from "mineflayer";
 import { Account, Server } from "@alts/db";
-
-const bots = new Map<string, Bot>();
+import { botManager } from "@alts/bot";
 
 export const botRouter = createTRPCRouter({
     getAccount: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
@@ -15,7 +12,7 @@ export const botRouter = createTRPCRouter({
         });
 
         if (!account) return null;
-        return { account, bot: !!bots.has(input) } as { account: Account; bot: boolean };
+        return { account, bot: !!botManager.bots.has(input) } as { account: Account; bot: boolean };
     }),
     listAccounts: publicProcedure.query(async ({ ctx }) => {
         const accounts = await ctx.prisma.account.findMany();
@@ -28,8 +25,17 @@ export const botRouter = createTRPCRouter({
         return servers as Server[];
     }),
     listRunningBots: publicProcedure.query(async ({ ctx }) => {
-        const data = Object.fromEntries(bots.entries());
-        return data as typeof data;
+        const data = [...botManager.bots.keys()];
+        const dbRows = await ctx.prisma.account.findMany({
+            where: {
+                id: {
+                    in: data,
+                },
+            },
+        });
+        const constructed = dbRows.map((row) => ({ account: row, data: botManager.getBot(row.id) }));
+        type A = typeof constructed;
+        return constructed as A;
     }),
     create: publicProcedure
         .input(
@@ -68,26 +74,12 @@ export const botRouter = createTRPCRouter({
             const server = _server!;
             const account = _account!;
 
-            const options: BotOptions = {
-                host: server.host,
-                port: server.port,
-                username: account.email,
-                password: account.password,
-                auth: "microsoft",
-                version: server.version,
-            };
-
-            const bot = createBot(options);
-
-            bots.set(input.accountId, bot);
+            botManager.createBot(server, account);
             console.log("Created bot");
             return { error: null };
         }),
     stop: publicProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
-        const bot = bots.get(input);
-        if (!bot) return { error: "Bot not found" };
-        bot.end();
-        bots.delete(input);
-        return { error: null };
+        const result = botManager.stopBot(input);
+        return { error: result ? null : "Bot not found" };
     }),
 });
