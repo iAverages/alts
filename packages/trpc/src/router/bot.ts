@@ -37,6 +37,11 @@ export const botRouter = createTRPCRouter({
         type A = typeof constructed;
         return constructed as A;
     }),
+    getBotData: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+        const bot = botManager.getBot(input);
+        if (!bot) return null;
+        return bot._data;
+    }),
     create: publicProcedure
         .input(
             z.object({

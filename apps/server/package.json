@@ -17,6 +17,7 @@
         "@alts/db": "*",
         "@alts/trpc": "*",
         "@fastify/cors": "^8.2.0",
+        "@fastify/static": "^6.9.0",
         "@trpc/server": "^10.10.0",
         "discord.js": "^14.7.1",
         "fastify": "^4.12.0",

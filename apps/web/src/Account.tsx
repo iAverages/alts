@@ -36,7 +36,7 @@ const App: Component = () => {
             <Show when={account.data?.bot}>
                 <Box>
                     <p>Bot is running</p>
-                    <button onClick={() => botStop.mutate(params.id)}>Start</button>
+                    <button onClick={() => botStop.mutate(params.id)}>Stop</button>
                 </Box>
             </Show>
         </div>
