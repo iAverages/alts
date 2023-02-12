@@ -4,17 +4,17 @@ import onLogin from "./events/login";
 import onLogout from "./events/logout";
 import onMessage from "./events/message";
 import mineflayer from "mineflayer";
-import { RunningAlt } from "./type";
+import { BotOptions, RunningAlt } from "./type";
 
-export const createBot = (connection: mineflayer.BotOptions & { serverId: string; host: string }) => {
+export const createBot = (connection: BotOptions) => {
     const mineflayerBot = mineflayer.createBot(connection);
     const bot = Object.assign(mineflayerBot, {
         _data: {
-            serverId: connection.serverId,
-            host: connection.host,
+            server: connection.server,
             networkServer: "",
             allowToMove: ["iAverage", "Royhal", "Klue", "Wosek"],
             restart: true,
+            account: connection.account,
         },
         log: (...args: string[]) => console.log(`[${mineflayerBot.username}] ${Array.from(args).join(`,}`)}`),
     }) satisfies RunningAlt;

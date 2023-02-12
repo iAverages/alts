@@ -1,14 +1,22 @@
-import { RunningAlt } from "./type";
+import { BotOptions, RunningAlt } from "./type";
 import { createBot as _createBot } from "./bot";
 import { Account, Server } from "@alts/db";
-import type { BotOptions } from "mineflayer";
-import { wait } from "./utils";
-import { EmbedBuilder, WebhookClient } from "discord.js";
+import { ColorResolvable, EmbedBuilder, WebhookClient } from "discord.js";
 
-const webhookClient = new WebhookClient({
-    id: config.discord.webhook.id,
-    token: config.discord.webhook.token,
+export const webhookClient = new WebhookClient({
+    id: process.env.DISCORD_WEBHOOK_ID ?? "",
+    token: process.env.DISCORD_WEBHOOK_TOKEN ?? "",
 });
+
+export const createEmbed = (bot: string, text: string, color: ColorResolvable) => {
+    return new EmbedBuilder()
+        .setAuthor({
+            name: text,
+            iconURL: `https://skins.danielraybone.com/v1/head/${bot}`,
+        })
+        .setColor(color)
+        .setTimestamp();
+};
 
 export const bots = new Map<string, RunningAlt>();
 
@@ -27,33 +35,18 @@ export const stopBot = (id: string) => {
 };
 
 export const createBot = (server: Server, account: Account) => {
-    const options: BotOptions & { serverId: string; host: string } = {
+    const options: BotOptions = {
         host: server.host,
         port: server.port,
         username: account.email,
         password: account.password,
         auth: "microsoft",
         version: server.version,
-        serverId: server.id,
+        server: server,
+        account: account,
     };
 
     const bot = _createBot(options);
-    bot.on("end", async () => {
-        bots.delete(account.id);
-        if (bot._data.restart) {
-            console.log("Bot ended, creating new isntance in 20 seconds");
-            await wait(1000 * 20); // wait 20 seconds
-            createBot(server, account);
-        } else {
-            console.log("Bot ended, not restarting");
-        }
-    });
-
-    bot.on("login", () => {
-        console.log("Bot logged in");
-    });
-
     bots.set(account.id, bot);
-
     console.log("Created bot");
 };
