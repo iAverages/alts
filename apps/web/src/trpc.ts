@@ -10,7 +10,7 @@ export const client = trpc.createClient({
     transformer: superjson,
     links: [
         httpBatchLink({
-            url: "http://localhost:3001/trpc",
+            url: process.env.NODE_ENV === "production" ? "/trpc" : "http://localhost:3001/trpc",
         }),
     ],
 });
