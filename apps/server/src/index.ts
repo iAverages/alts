@@ -11,7 +11,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
-console.log(process.env);
 const server = fastify({
     maxParamLength: 5000,
     logger: true,
