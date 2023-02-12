@@ -1,16 +1,17 @@
 import sourceMapSupport from "source-map-support";
 sourceMapSupport.install();
 import dotenv from "dotenv";
-dotenv.config({ path: "../../../.env" });
+import path from "path";
+import { fileURLToPath } from "url";
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import fastify from "fastify";
 import { appRouter, createContext } from "@alts/trpc";
 import cors from "@fastify/cors";
 import fastifyStaticPlugin from "@fastify/static";
-import path from "path";
-import { fileURLToPath } from "url";
-const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
+console.log(process.env);
 const server = fastify({
     maxParamLength: 5000,
     logger: true,
