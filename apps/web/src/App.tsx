@@ -44,15 +44,6 @@ const App: Component = () => {
                         </Box>
                     ))}
                 </div>
-
-                <div class="flex gap-2 flex-col">
-                    <h2>Running</h2>
-                    {Object.entries(runningBots.data ?? []).map(([key, bot]) => (
-                        <Box>
-                            <p>{bot.username}</p>
-                        </Box>
-                    ))}
-                </div>
             </header>
         </div>
     );
